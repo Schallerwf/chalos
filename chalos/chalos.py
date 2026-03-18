@@ -11,14 +11,14 @@ from dataclasses import dataclass, field
 from datetime import timezone, timedelta, datetime, time as dtime
 from typing import List, Dict, Any, Optional
 
-DEFAULT_LOGO = """ ______     __  __     ______     __         ______     ______   
-/\  ___\   /\ \_\ \   /\  __ \   /\ \       /\  __ \   /\  ___\  
-\ \ \____  \ \  __ \  \ \  __ \  \ \ \____  \ \ \/\ \  \ \___  \ 
- \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \_____\  \ \_____\  \/\_____\\
+DEFAULT_LOGO = r""" ______     __  __     ______     __         ______     ______
+/\  ___\   /\ \_\ \   /\  __ \   /\ \       /\  __ \   /\  ___\
+\ \ \____  \ \  __ \  \ \  __ \  \ \ \____  \ \ \/\ \  \ \___  \
+ \ \_____\  \ \_\ \_\  \ \_\ \_\  \ \_____\  \ \_____\  \/\_____\
   \/_____/   \/_/\/_/   \/_/\/_/   \/_____/   \/_____/   \/_____/
  C H A L O S   C L I   O R D E R I N G
 """
-
+ 
 @dataclass
 class Location:
     id: str
@@ -79,6 +79,47 @@ def parse_open_hours(raw: Dict[str, Any]) -> Dict[str, List[OpenWindow]]:
             lst.append(OpenWindow(open=w["open"], close=w["close"]))
         out[day.lower()] = lst
     return out
+
+def checkout_animation(fast: bool = False) -> None:
+    steps = [
+        "Initializing empanada compiler",
+        "Establishing TCP handshake with the kitchen",
+        "Serializing salsa preferences to JSON",
+        "Reticulating splines and preheating oven",
+        "Deploying order to production chef",
+        "Invalidating hunger cache",
+    ]
+    finish = "Build succeeded. Your order is read to deploy to production"
+
+    sys.stdout.write("\n")
+    for step in steps:
+        sys.stdout.write(f"  > {step} ")
+        sys.stdout.flush()
+        dots = 45 - len(step)
+        for _ in range(dots):
+            sys.stdout.write(".")
+            sys.stdout.flush()
+            if not fast:
+                time.sleep(0.05)
+        if not fast:
+            time.sleep(0.3)
+        sys.stdout.write(" [OK]\n")
+        sys.stdout.flush()
+        if not fast:
+            time.sleep(0.2)
+
+    sys.stdout.write("\n")
+    if not fast:
+        time.sleep(0.5)
+    for char in finish:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        if not fast:
+            time.sleep(0.05)
+    sys.stdout.write("\n\n")
+    sys.stdout.flush()
+    if not fast:
+        time.sleep(0.5)
 
 def animatedLogo(logo: str, fast: bool = False) -> None:
     total = 40
@@ -241,9 +282,9 @@ def flow_empanadas(menu: Dict[str, Any], cart: Cart) -> None:
     print("Added empanadas to cart.\n")
 
 def flow_breakfast_burrito(menu: Dict[str, Any], cart: Cart) -> None:
-    types = menu.get("types", ["bacon", "sausage", "none"])
-    salsas = menu.get("salsas", ["spicy", "mild", "none"])
-    mods = menu.get("modifiers", ["avocado", "sour cream", "no cheese"])
+    types = menu.get("types", ["regular", "bacon", "sausage"])
+    salsas = menu.get("salsas", ["mild", "spicy"])
+    mods = menu.get("modifiers", ["avocado", "sour cream", "no cheese", "no pico"])
     burritoType = ask_choice("Choose your burrito:", types)
     salsa = ask_choice("Choose salsa:", salsas)
     chosen_mods = ask_multi_select("Add modifiers (optional):", mods)
@@ -272,8 +313,11 @@ def flow_coffee(menu: Dict[str, Any], cart: Cart) -> None:
 
 def flow_chicken_sandwich(menu: Dict[str, Any], cart: Cart) -> None:
     versions = menu.get("versions", ["classic", "spicy"])
-    mods = menu.get("modifiers", ["no cheese", "no slaw", "no sauce"])
     version = ask_choice("Choose chicken sandwich version:", versions)
+    if version == "spicy slaw":
+        mods = ["no slaw", "no sauce", "add avocado", "add fried egg", "add cheese (swiss)"]
+    else:
+        mods = ["no lettuce", "no tomatoes", "no onions", "no aioli", "add avocado", "add fried egg", "add cheese (swiss)"]
     chosen_mods = ask_multi_select("Add modifiers (optional):", mods)
     cart.add(CartItem(kind="chicken_sandwich", details={
         "version": version, "modifiers": chosen_mods
@@ -431,6 +475,8 @@ def _main(argv: Optional[List[str]] = None) -> int:
             if not checkout_url:
                 print("Checkout response missing 'checkout_url'.")
                 continue
+            checkout_animation(args.fast)
+            print(f"Checkout URL: {checkout_url}")
             print("Opening checkout in your browser...")
             webbrowser.open(checkout_url, new=2, autoraise=True)
             print("Thank you!")

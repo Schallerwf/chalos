@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chalos"
-version = "0.1.0"
+version = "0.2.0"
 description = "Order Chalos empanadas, burritos, sandwiches, and coffee from the CLI. Real hackers order Chalos from the CLI."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -22,4 +22,4 @@ classifiers = [
 ]
 
 [project.scripts]
-chalos = "chalos.cli:main"
+chalos = "chalos.chalos:main"
