@@ -89,7 +89,7 @@ def checkout_animation(fast: bool = False) -> None:
         "Deploying order to production chef",
         "Invalidating hunger cache",
     ]
-    finish = "Build succeeded. Your order is read to deploy to production"
+    finish = "Build succeeded. Your order is ready to deploy to production"
 
     sys.stdout.write("\n")
     for step in steps:
